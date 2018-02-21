@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="MAUI Category"
+            id="MAUI.commands.category">
+      </category>
+      <command
+            name="Update MAUI project"
+            categoryId="MAUI.commands.category"
+            id="MAUI.commands.updateCommand">
+      </command>
+      <command
+            name="Parse Log Files"
+            categoryId="MAUI.commands.category"
+            id="MAUI.commands.parseLogsCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.propertyPages">
+      <page
+            name="MAUI Modules"
+            class="se.aceone.maui.properties.MauiModules"
+            id="se.aceone.maui.properties.MauiModules ">
+         <!-- <enabledWhen>
+         <or>
+         	<instanceof value="org.eclipse.cdt.core.model.ICProject"/>
+			<instanceof value="org.eclipse.core.resources.IProject"/>
+			<instanceof value="org.eclipse.core.resources.IResource"/>
+            <instanceof
+                  value="org.eclipse.core.resources.IFile">
+            </instanceof>
+            </or>
+         </enabledWhen> -->
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="MAUI.commands.updateCommand"
+            class="se.aceone.maui.handlers.UpdateHandler">
+		<!--	<activeWhen>
+				<with variable="selection">
+					<iterate ifEmpty="true" operator="or">
+			           <adapt type="org.eclipse.core.resources.IResource">
+				            <test property="org.eclipse.core.resources.projectNature"
+				                  value="org.eclipse.cdt.managedbuilder.core.managedBuildNature"/>
+			           </adapt>
+			           </iterate>
+				</with>
+				</activeWhen>  -->
+      </handler>
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="MAUI.commands.parseLogsCommand"
+            class="se.aceone.maui.handlers.ParseLogFileHandler">
+		<!--	<activeWhen>
+				<with variable="selection">
+					<iterate ifEmpty="true" operator="or">
+			           <adapt type="org.eclipse.core.resources.IResource">
+				            <test property="org.eclipse.core.resources.projectNature"
+				                  value="org.eclipse.cdt.managedbuilder.core.managedBuildNature"/>
+			           </adapt>
+			           </iterate>
+				</with>
+				</activeWhen>  -->
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="MAUI.commands.parseLogsCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+U"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="menu:org.eclipse.ui.main.menu?after=additions">
+         <menu
+               label="MAUI"
+               mnemonic="M"
+               id="MAUI.menus.sampleMenu">
+            <command
+                  commandId="MAUI.commands.updateCommand"
+                  mnemonic="S"
+                  id="MAUI.menus.updateCommand">
+            </command>
+            <command
+                  commandId="MAUI.commands.parseLogsCommand"
+                  mnemonic="P"
+                  id="MAUI.commands.parseLogsCommand">
+            </command>
+         </menu>
+      </menuContribution>
+      <!-- 
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="MAUI.toolbars.projectToolbar">
+            <command
+                  commandId="MAUI.commands.updateCommand"
+                  icon="icons/sample.png"
+                  tooltip="Update MAUI project"
+                  id="MAUI.commands.updateCommand">
+            </command>
+            <command
+                  commandId="MAUI.commands.parseLogsCommand"
+                  icon="icons/sample.png"
+                  tooltip="Parse Log Files"
+                  id="MAUI.commands.parseLogsCommand">
+            </command>
+         </toolbar>
+      </menuContribution>
+      -->
+   </extension>
+   	<extension point="org.eclipse.ui.newWizards">
+		<category id="se.aceone.mediatek.maui.newWizards" name="MAUI">
+		</category>
+		<wizard canFinishEarly="false" category="se.aceone.mediatek.maui.newWizards"
+			class="se.aceone.maui.ui.NewMauiProjectWizard"
+			finalPerspective="org.eclipse.cdt.ui.CPerspective" 
+			id="se.aceone.maui.ui.NewLinkit10ProjectWizard" name="New MAUI Project"
+			project="true">
+			<description>
+				%wizard.description
+			</description>
+		</wizard>
+	</extension>
+   	<extension point="org.eclipse.ui.navigator.navigatorContent">
+		<commonWizard associatedExtensionId="org.eclipse.cdt.ui.navigator.content"
+			menuGroupId="org.eclipse.cdt.ui.newProject" type="new"
+			wizardId="se.aceone.maui.ui.NewMauiProjectWizard">
+			<enablement>
+				<or>
+					<with variable="activeWorkbenchWindow.activePerspective">
+						<equals value="org.eclipse.cdt.ui.CPerspective">
+						</equals>
+					</with>
+					<instanceof value="org.eclipse.cdt.core.model.ICElement" />
+					<and>
+						<instanceof value="org.eclipse.core.resources.IProject" />
+						<test property="org.eclipse.core.resources.projectNature"
+							value="org.eclipse.cdt.core.cnature">
+						</test>
+					</and>
+				</or>
+			</enablement>
+		</commonWizard>
+	</extension>
+   
+   	<extension id="se.aceone.mediatek.maui.buildDefinitions"
+		name="MAUI Tool Chain" point="org.eclipse.cdt.managedbuilder.core.buildDefinitions">
+	
+		<builder
+        autoBuildTarget="all"
+        buildfileGenerator="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuMakefileGenerator"
+        cleanBuildTarget="clean"
+        command="make"
+        errorParsers="org.eclipse.cdt.core.MakeErrorParser"
+        id="se.aceone.mediatek.maui.gnu.builder"
+        ignoreErrCmd="-k"
+        incrementalBuildTarget="all"
+        isAbstract="true"
+        isVariableCaseSensitive="false"
+        macroInputDirRelPathValue="$(dir $&lt;)"
+        macroInputFileBaseNameValue="$(basename $(notdir $&lt;))"
+        macroInputFileExtValue="$(suffix $(notdir $&lt;))"
+        macroInputFileNameValue="$(notdir $&lt;)"
+        macroInputFileRelPathValue="$&lt;"
+        macroOutputDirRelPathValue="$(dir $@)"
+        macroOutputFileBaseNameValue="$(basename (notdir $@))"
+        macroOutputFileExtValue="$(suffix $(notdir $@)"
+        macroOutputFileNameValue="$(notdir $@)"
+        macroOutputFileRelPathValue="$@"
+		name="MAUI RVCT Builder" 
+        parallelBuildCmd="-j*"
+        reservedMacroNames="ROOT,DEPS,OBJS,.*_SRCS,EXECUTABLES,SUBDIRS,LIBS,USER_OBJS,.*_INPUTS,.*_OUTPUTS"
+        variableFormat="${=}">
+  </builder>
+		
+		
+		<projectType id="se.aceone.mediatek.maui.projectType" name="MAUI">
+	<configuration artifactExtension="vxp" cleanCommand="rm -f"
+		id="se.aceone.mediatek.maui.configuration" name="Default">
+		
+		<toolChain archList="all"
+			id="se.aceone.mediatek.maui.toolChain.default.rvct" isAbstract="false"
+			name="MAUI Tool Chain (RVCT)" osList="all"
+			targetTool="se.aceone.mediatek.maui.tool.linker">
+			<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF "
+				id="se.aceone.mediatek.maui.targetplatform.rvct" name="MAUI Target"
+				osList="all">
+			</targetPlatform>
+			<builder
+	           buildfileGenerator="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuMakefileGenerator"
+				id="se.aceone.mediatek.maui.builder.rvct" isVariableCaseSensitive="false"
+				name="MAUI Builder" 
+				superClass="se.aceone.mediatek.maui.gnu.builder">
+			</builder>
+			<optionCategory
+				id="se.aceone.mediatek.maui.optionCategory.includePaths.rvct"
+				name="Include Folders">
+			</optionCategory>
+			<tool announcement="Starting C compile"
+				command="${COMPILERPATH}/${COMPILERTOOLPATH}/armcc"
+				commandLinePattern="&quot;${COMMAND}&quot; ${RVCTCOMPILER}  ${FLAGS} -o ${OUTPUT} -c ${INPUTS}"
+				errorParsers="se.aceone.mediatek.maui.rvct.compiler" 
+				id="se.aceone.mediatek.maui.compiler.c.rvct"
+				name="C Compiler" natureFilter="both">
+				<optionCategory
+					id="se.aceone.mediatek.maui.c.optionCategory.includePaths.rvct"
+					name="Include Path">
+				</optionCategory>
+				<option
+          browseType="directory"
+          category="se.aceone.mediatek.maui.c.optionCategory.includePaths.rvct"
+          command="-I"
+          id="se.aceone.mediatek.maui.compiler.c.option.incpath.rvct"
+          name="C Include Path"
+          resourceFilter="project"
+          commandGenerator="se.aceone.maui.toolchain.IncludePathGenerator"
+          valueType="includePath">
+				</option>
+				<optionCategory 
+					id="se.aceone.mediatek.maui.c.optionCategory.macros.rvct" name="Macros">
+				</optionCategory>
+				<option browseType="none" 
+					category="se.aceone.mediatek.maui.c.optionCategory.macros.rvct"
+					command="-D" id="se.aceone.mediatek.maui.compiler.c.option.macros.rvct"
+					name="C Macros" resourceFilter="project" valueType="definedSymbols">
+				</option>
+				<inputType buildVariable="C_SKETCH_FILES"
+					dependencyContentType="org.eclipse.cdt.core.cHeader"
+					id="se.aceone.mediatek.maui.compiler.c.input.rvct"
+					multipleOfType="false" name="C Source" primaryInput="true"
+					sourceContentType="org.eclipse.cdt.core.cSource">
+				</inputType>
+				<outputType buildVariable="LINK_OBJ"
+					id="se.aceone.mediatek.maui.compiler.c.link.output.rvct" name="C Link Object"
+					nameProvider="org.eclipse.cdt.managedbuilder.makegen.gnu.GnuLinkOutputNameProvider"
+					outputs="o" primaryOutput="true">
+				</outputType>
+			</tool>
+				<tool announcement="Starting Linker"
+						command="${COMPILERPATH}/${COMPILERTOOLPATH}/armlink"
+						commandLinePattern="&quot;${COMMAND}&quot; ${GCCLINKER} -B ${ARMNONEEABITHUMB} -T &quot;${LINKIT10}/${GCCTCCLIB}/scat.ld&quot; -o ${OUTPUT} ${INPUTS} &quot;${LINKIT10}/${GCCLIB}/${COMMONLIB}&quot; "
+						errorParsers="se.aceone.mediatek.maui.rvct.linker" 
+						id="se.aceone.mediatek.maui.tool.linker"
+						name="Linker" natureFilter="both">
+						<inputType buildVariable="LINK_OBJ"
+							id="se.aceone.mediatek.maui.tool.linker.ob.input"
+							multipleOfType="true" name="Linker input" primaryInput="true"
+							sources="o">
+						</inputType>
+						<outputType buildVariable="AXF_DATA"
+							id="se.aceone.mediatek.maui.tool.linker.data.output"
+							multipleOfType="false" name="Linker output axf" outputNames="${ProjName}.axf"
+							outputs="axf" primaryOutput="true">
+						</outputType>
+					</tool>
+		</toolChain>
+	</configuration>
+</projectType>
+		
+		<!--
+		-->
+		
+	</extension>
+	<extension id="se.aceone.mediatek.maui.errorparser.compiler"
+		name="MAUI Error parser Compiler" point="org.eclipse.cdt.core.ErrorParser">
+		<errorparser id="se.aceone.mediatek.maui.rvct.compiler"
+			name="RVCT Compiler Error parser">
+			<pattern description-expr="$7" eat-processed-line="true"
+				file-expr="$1" line-expr="$3"
+				regex="&quot;(.*?)&quot;(.*\s)(\d+):\s*(([Ee]rror)|(ERROR)):\s*(.*)"
+				severity="Error">
+			</pattern>
+			<pattern description-expr="$7" eat-processed-line="true"
+				file-expr="$1" line-expr="$3"
+				regex="&quot;(.*?)&quot;(.*\s)(\d+):\s*(([Ww]arning)|(WARNING)):\s*(.*)"
+				severity="Warning">
+			</pattern>
+			<pattern description-expr="$9" eat-processed-line="true"
+				file-expr="$1" line-expr="$3"
+				regex="&quot;(.*?)&quot;(.*\s)(\d+):\s*(([Nn]ote)|(NOTE)|([Ii]nfo)|(INFO)):\s*(.*)"
+				severity="Info">
+			</pattern>
+		</errorparser>
+	</extension>
+	<extension id="se.aceone.mediatek.maui.errorparser.linker"
+		name="LinkIt Error parser Linker" point="org.eclipse.cdt.core.ErrorParser">
+		<errorparser id="se.aceone.mediatek.maui.rvct.linker"
+			name="RVCT Linker Error parser">
+			<pattern description-expr="$5" eat-processed-line="true"
+				regex="(([Ee]rror)|(ERROR)):\s*(.*):\s*(.*)" severity="Error">
+			</pattern>
+			<pattern description-expr="$5" eat-processed-line="true"
+				regex="(([Ww]arning)|(WARNING)):\s*(.*):\s*(.*)" severity="Warning">
+			</pattern>
+			<pattern description-expr="$7" eat-processed-line="true"
+				regex="(([Nn]ote)|(NOTE)|([Ii]nfo)|(INFO)):\s*(.*):\s*(.*)"
+				severity="Info">
+			</pattern>
+		</errorparser>
+	</extension>
+</plugin>
